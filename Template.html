@@ -33,8 +33,8 @@
 
 		var map = new L.Map('map');
 
-		// some weird calculations to fit the image - leaflet has some bugs there
-		// the fitBounds method ist not correct for large scale maps
+		// Some weird calculations to fit the image to the initial posotion
+		// leaflet has some bugs there. The fitBounds method is not correct for large scale maps
 		var tileWidth = 256 * Math.pow(2, maxLevel);
 		var radius = tileWidth / 2 / Math.PI;
 		var rx = width - tileWidth / 2;
@@ -51,7 +51,6 @@
 		var zoom = map.getBoundsZoom(bounds);
 		var center = new L.latLng(centerLat, centerLon);
 
-		// add postal code layer
 		var tilesUrl = image + '/{z}-{x}-{y}.jpg',
 		tileLayer = new L.TileLayer(tilesUrl, {maxZoom: maxLevel, minZoom: 0, opacity: 1.0, zIndex: 1, noWrap: true});
 		map.addLayer(tileLayer);
