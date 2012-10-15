@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Frankfurt</title>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />  
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.css" />
+	<!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.ie.css" />
+<![endif]-->
+    <style>
+        body
+        {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map
+        {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+	<div id="map" style="background-color:#fff;"/>
+    <script src="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.js"></script>
+    <script>
+		var image = '<<image>>';
+		var width = <<width>>;
+		var height = <<height>>;
+		var maxLevel = <<maxLevel>>;
+
+		var map = new L.Map('map');
+
+		// some weird calculations to fit the image - leaflet has some bugs there
+		// the fitBounds method ist not correct for large scale maps
+		var tileWidth = 256 * Math.pow(2, maxLevel);
+		var radius = tileWidth / 2 / Math.PI;
+		var rx = width - tileWidth / 2;
+		var ry = -height + tileWidth / 2;
+
+		var west = -180;
+		var east = (180 / Math.PI) * (rx / radius);
+		var north = 85.05;
+		var south = (360 / Math.PI) * (Math.atan(Math.exp(ry / radius)) - (Math.PI / 4));
+		var rc = (tileWidth / 2 + ry) / 2;
+		var centerLat = (360 / Math.PI) * (Math.atan(Math.exp(rc / radius)) - (Math.PI / 4));
+		var centerLon = (west + east) / 2;
+		var bounds = [[south, west], [north, east]];
+		var zoom = map.getBoundsZoom(bounds);
+		var center = new L.latLng(centerLat, centerLon);
+
+		// add postal code layer
+		var tilesUrl = image + '/{z}-{x}-{y}.jpg',
+		tileLayer = new L.TileLayer(tilesUrl, {maxZoom: maxLevel, minZoom: 0, opacity: 1.0, zIndex: 1, noWrap: true});
+		map.addLayer(tileLayer);
+
+		map.setView(center, zoom);
+	</script>
+</body>
+</html>
