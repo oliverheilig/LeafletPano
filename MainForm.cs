@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace LeafletPano
 {
@@ -20,10 +21,10 @@ namespace LeafletPano
 
         public void CreateTiles(string imageFile)
         {
-            string directoryName = System.IO.Path.GetDirectoryName(imageFile);
-            string imageName = System.IO.Path.GetFileNameWithoutExtension(imageFile);
+            string directoryName = Path.GetDirectoryName(imageFile);
+            string imageName = Path.GetFileNameWithoutExtension(imageFile);
 
-            System.IO.Directory.CreateDirectory(directoryName + "/" + imageName);
+            Directory.CreateDirectory(directoryName + "/" + imageName);
 
             var srcImg = Image.FromFile(imageFile);
 
@@ -55,8 +56,9 @@ namespace LeafletPano
                         }
                     }
             }
+            srcImg.Dispose();
 
-            var reader = new System.IO.StreamReader(Application.StartupPath + "\\Template.html");
+            var reader = new StreamReader(Application.StartupPath + "\\Template.html");
             var template = reader.ReadToEnd();
             reader.Close();
 
@@ -64,13 +66,28 @@ namespace LeafletPano
             template = template.Replace("<<width>>", width.ToString());
             template = template.Replace("<<height>>", height.ToString());
             template = template.Replace("<<maxLevel>>", maxLevel.ToString());
-        
+
             string htmlFile = directoryName + "/" + imageName + ".html";
-            var writer = new System.IO.StreamWriter(htmlFile);
+            var writer = new StreamWriter(htmlFile);
             writer.Write(template);
             writer.Close();
 
             System.Diagnostics.Process.Start(htmlFile);
+        }
+
+        private void textBox1_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if(s.Length == 1)
+                textBox1.Text = s[0];
+        }
+
+        private void textBox1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.All;
+            else
+                e.Effect = DragDropEffects.None;
         }
     }
 }

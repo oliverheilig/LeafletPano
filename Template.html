@@ -33,8 +33,8 @@
 
 		var map = new L.Map('map');
 
-		// Some weird calculations to fit the image to the initial posotion
-		// leaflet has some bugs there. The fitBounds method is not correct for large scale maps
+		// Some weird calculations to fit the image to the initial position
+		// Leaflet has some bugs there. The fitBounds method is not correct for large scale bounds
 		var tileWidth = 256 * Math.pow(2, maxLevel);
 		var radius = tileWidth / 2 / Math.PI;
 		var rx = width - tileWidth / 2;
@@ -52,7 +52,10 @@
 		var center = new L.latLng(centerLat, centerLon);
 
 		var tilesUrl = image + '/{z}-{x}-{y}.jpg',
-		tileLayer = new L.TileLayer(tilesUrl, {maxZoom: maxLevel, minZoom: 0, opacity: 1.0, zIndex: 1, noWrap: true});
+		tileLayer = new L.TileLayer(tilesUrl, {
+			maxZoom: maxLevel, minZoom: 0, opacity: 1.0, zIndex: 1, noWrap: true,
+			attribution: '<a href="https://github.com/oliverheilig/LeafletPano">LeafletPano</a>'
+		});
 		map.addLayer(tileLayer);
 
 		map.setView(center, zoom);
