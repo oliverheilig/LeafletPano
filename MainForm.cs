@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
+using LeafletPano.Properties;
 
 namespace LeafletPano
 {
@@ -11,66 +12,16 @@ namespace LeafletPano
         {
             InitializeComponent();
 
-            textBox1.Text = Application.StartupPath + "\\DemoData\\Rothenburg.jpg";
+            colorPanel.BackColor = Settings.Default.BackgroundColor;
+            if (string.IsNullOrEmpty(Properties.Settings.Default.InitialPath))
+                textBox1.Text = Application.StartupPath + "\\DemoData\\Rothenburg.jpg";
+            else
+                textBox1.Text = Properties.Settings.Default.InitialPath;
         }
 
         private void startButton_Click(object sender, EventArgs e)
         {
-            CreateTiles(textBox1.Text);
-        }
-
-        public void CreateTiles(string imageFile)
-        {
-            string directoryName = Path.GetDirectoryName(imageFile);
-            string imageName = Path.GetFileNameWithoutExtension(imageFile);
-
-            Directory.CreateDirectory(directoryName + "/" + imageName);
-
-            var srcImg = Image.FromFile(imageFile);
-
-            var width = srcImg.Width;
-            var height = srcImg.Height;
-            var size = Math.Max(width, height);
-            var numTiles = size / 256;
-            var maxLevel = (int)Math.Ceiling(Math.Log(numTiles, 2));
-
-            for (int level = 0; level <= maxLevel; level++)
-            {
-                int logTileSize = 256 * (1 << (maxLevel - level));
-                int numTilesX = (width % logTileSize == 0) ? width / logTileSize : width / logTileSize + 1;
-                int numTilesY = (height % logTileSize == 0) ? height / logTileSize : height / logTileSize + 1;
-
-                for (int tx = 0; tx < numTilesX; tx++)
-                    for (int ty = 0; ty < numTilesY; ty++)
-                    {
-                        using (var tileImg = new Bitmap(256, 256))
-                        using (var graphcis = Graphics.FromImage(tileImg))
-                        {
-                            graphcis.FillRectangle(Brushes.White, 0, 0, 256, 256);
-                            graphcis.DrawImage(srcImg, new Rectangle(0, 0, 256, 256),
-                                new Rectangle(tx * logTileSize, ty * logTileSize, logTileSize, logTileSize),
-                                GraphicsUnit.Pixel);
-
-                            tileImg.Save(string.Format("{0}/{1}/{2}-{3}-{4}.jpg", directoryName, imageName, level, tx, ty),
-                                System.Drawing.Imaging.ImageFormat.Jpeg);
-                        }
-                    }
-            }
-            srcImg.Dispose();
-
-            var reader = new StreamReader(Application.StartupPath + "\\Template.html");
-            var template = reader.ReadToEnd();
-            reader.Close();
-
-            template = template.Replace("<<image>>", imageName);
-            template = template.Replace("<<width>>", width.ToString());
-            template = template.Replace("<<height>>", height.ToString());
-            template = template.Replace("<<maxLevel>>", maxLevel.ToString());
-
-            string htmlFile = directoryName + "/" + imageName + ".html";
-            var writer = new StreamWriter(htmlFile);
-            writer.Write(template);
-            writer.Close();
+            string htmlFile = Tiler.CreateTiles(textBox1.Text, colorPanel.BackColor);
 
             System.Diagnostics.Process.Start(htmlFile);
         }
@@ -88,6 +39,32 @@ namespace LeafletPano
                 e.Effect = DragDropEffects.All;
             else
                 e.Effect = DragDropEffects.None;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var cd = new ColorDialog();
+            cd.Color = Properties.Settings.Default.BackgroundColor;
+            if (cd.ShowDialog() == DialogResult.OK)
+                colorPanel.BackColor = cd.Color;
+    
+            cd.Dispose();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var fd = new OpenFileDialog();
+            if (fd.ShowDialog() == DialogResult.OK)
+                this.textBox1.Text = fd.FileName;
+
+            fd.Dispose();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.BackgroundColor = colorPanel.BackColor;
+            Settings.Default.InitialPath = textBox1.Text;
+            Settings.Default.Save();
         }
     }
 }

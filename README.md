@@ -10,4 +10,4 @@ How to use:
 * Enter image path or drop file on text edit
 * Push Start
 
-Supported Input formats: BMP. GIF, JPEG, PNG, TIFF. Output is always JPEG.
+Supported Input formats: BMP, GIF, JPEG, PNG, TIFF. Output is always JPEG.
