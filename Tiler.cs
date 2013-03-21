@@ -18,15 +18,18 @@ namespace LeafletPano
 
             var srcImg = Image.FromFile(imageFile);
 
-            var width = srcImg.Width;
-            var height = srcImg.Height;
-            var size = Math.Max(width, height);
-            var numTiles = size / 256;
-            var maxLevel = (int)Math.Ceiling(Math.Log(numTiles, 2));
+            int width = srcImg.Width;
+            int height = srcImg.Height;
+            int size = Math.Max(width, height);
+            double numTiles = size / 256.0;
 
-            for (int level = 0; level <= maxLevel; level++)
+            int orgLevel = (int)Math.Ceiling(Math.Log(numTiles, 2)); // the level where the image is 100%
+            int minLevel = 0; // the minimum tile level
+            int maxLevel = orgLevel; // the maximum tile level
+
+            for (int level = minLevel; level <= maxLevel; level++)
             {
-                int logTileSize = 256 * (1 << (maxLevel - level));
+                int logTileSize = (orgLevel > level) ? 256 << (orgLevel - level) : 256 >> (level - orgLevel);
                 int numTilesX = (width % logTileSize == 0) ? width / logTileSize : width / logTileSize + 1;
                 int numTilesY = (height % logTileSize == 0) ? height / logTileSize : height / logTileSize + 1;
 
@@ -56,9 +59,14 @@ namespace LeafletPano
             }
 
             template = template.Replace("//image//", imageName);
+
             template = template.Replace("//width//", width.ToString());
             template = template.Replace("//height//", height.ToString());
+
             template = template.Replace("//maxLevel//", maxLevel.ToString());
+            template = template.Replace("//minLevel//", minLevel.ToString());
+            template = template.Replace("//orgLevel//", orgLevel.ToString());
+           
             template = template.Replace("//bgColor//", ColorTranslator.ToHtml(backgroundColor));
 
             string htmlFile = directoryName + "/" + imageName + ".html";
