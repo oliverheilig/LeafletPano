@@ -97,7 +97,6 @@ namespace LeafletPano
             pictureBox1.Image = e.Image;
         }
 
-
         private void textBox1_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -123,6 +122,8 @@ namespace LeafletPano
                 this.textBox1.Text = fd.FileName;
 
             fd.Dispose();
+
+            Initfile(this.textBox1.Text);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
