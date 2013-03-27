@@ -132,5 +132,10 @@ namespace LeafletPano
             Settings.Default.InitialPath = textBox1.Text;
             Settings.Default.Save();
         }
+
+        private void textBox1_Leave(object sender, EventArgs e)
+        {
+            Initfile(this.textBox1.Text);
+        }
     }
 }
