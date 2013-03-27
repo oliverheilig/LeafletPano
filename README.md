@@ -3,7 +3,7 @@ LeafletPano
 
 A simple tool which tiles large images to publish them for web and mobile
 
-<img src="https://github.com/oliverheilig/LeafletPano/blob/master/LeafletPano.png?raw=true" alt="LeafletPano" />
+<img src="https://github.com/oliverheilig/LeafletPano/blob/master/doc/LeafletPano.png?raw=true" alt="LeafletPano" />
 
 See http://linda-carolina-heilig-photography.de/panoramas/ for some sample images
 
