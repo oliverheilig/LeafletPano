@@ -5,10 +5,7 @@
     <meta charset="utf-8" />
     <meta name="apple-mobile-web-app-capable" content="yes" />  
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css" />
-	<!--[if lte IE 8]>
-		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.ie.css" />
-	<![endif]-->
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <style>
         body
         {
@@ -24,7 +21,7 @@
 </head>
 <body>
 	<div id="map" style="background-color://bgColor//;"/>
-    <script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script>
       var image = '//image//';
       var width = //width//;
@@ -32,8 +29,6 @@
       var maxLevel = //maxLevel//;
       var minLevel = //minLevel//;
       var orgLevel = //orgLevel//;
-
-      var map = new L.Map('map');
 
       // Some weird calculations to fit the image to the initial position
       // Leaflet has some bugs there. The fitBounds method is not correct for large scale bounds
@@ -50,17 +45,19 @@
       var centerLat = (360 / Math.PI) * (Math.atan(Math.exp(rc / radius)) - (Math.PI / 4));
       var centerLon = (west + east) / 2;
       var bounds = [[south, west], [north, east]];
+
+      var map = new L.Map('map', {maxBounds: bounds});
+
+      L.tileLayer(image + '/{z}-{x}-{y}.jpg', {
+        maxZoom: maxLevel, minZoom: minLevel, opacity: 1.0, zIndex: 1, noWrap: true,
+        bounds: bounds,
+        attribution: '<a href="https://github.com/oliverheilig/LeafletPano">LeafletPano</a>'
+		  }).addTo(map);
+		  
       var zoom = map.getBoundsZoom(bounds);
       var center = new L.latLng(centerLat, centerLon);
-
-      var tilesUrl = image + '/{z}-{x}-{y}.jpg',
-      tileLayer = new L.TileLayer(tilesUrl, {
-      maxZoom: maxLevel, minZoom: minLevel, opacity: 1.0, zIndex: 1, noWrap: true,
-      attribution: '<a href="https://github.com/oliverheilig/LeafletPano">LeafletPano</a>'
-		});
-		map.addLayer(tileLayer);
-
-		map.setView(center, zoom);
+  
+  		map.setView(center, zoom);
 	</script>
 </body>
 </html>
